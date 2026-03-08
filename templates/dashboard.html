@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Faculty Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container mb-4">
+    <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="card card-blue text-center shadow">
+                    <div class="card-body">
+                        <i class="bi bi-trophy fs-1"></i>
+                        <h5 class="card-title">Total</h5>
+                        <p class="card-text fs-3">{{ faculty.achievements|length if faculty.achievements else 0 }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="card card-purple text-center shadow">
+                    <div class="card-body">
+                        <i class="bi bi-book fs-1"></i>
+                        <h5 class="card-title">Publications</h5>
+                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Publication')|list|length }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="card card-green text-center shadow">
+                    <div class="card-body">
+                        <i class="bi bi-people fs-1"></i>
+                        <h5 class="card-title">Conferences</h5>
+                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Conference')|list|length }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="card card-orange text-center shadow">
+                    <div class="card-body">
+                        <i class="bi bi-tools fs-1"></i>
+                        <h5 class="card-title">Workshops</h5>
+                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Workshop')|list|length }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="card card-red text-center shadow">
+                    <div class="card-body">
+                        <i class="bi bi-lightbulb fs-1"></i>
+                        <h5 class="card-title">Patents</h5>
+                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Patent')|list|length }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="card card-blue text-center shadow">
+                    <div class="card-body">
+                        <i class="bi bi-award fs-1"></i>
+                        <h5 class="card-title">Awards</h5>
+                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Award')|list|length }}</p>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+<div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    <a href="{{ url_for('add_achievement') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle"></i> Add Achievement</a>
+    <a href="{{ url_for('view_achievements') }}" class="btn btn-secondary btn-lg"><i class="bi bi-list-ul"></i> View Achievements</a>
+</div>
+{% endblock %}

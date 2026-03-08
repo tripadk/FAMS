@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}View Achievements{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="bi bi-list-ul"></i> My Achievements</h2>
+    {% if achievements %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped rounded shadow">
+                <thead class="table-primary">
+                    <tr>
+                        <th><i class="bi bi-tag"></i> Title</th>
+                        <th><i class="bi bi-tags"></i> Type</th>
+                        <th><i class="bi bi-calendar"></i> Date</th>
+                        <th><i class="bi bi-file-text"></i> Description</th>
+                        <th><i class="bi bi-check-circle"></i> Status</th>
+                        <th><i class="bi bi-gear"></i> Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for achievement in achievements %}
+                        <tr>
+                            <td>{{ achievement.title }}</td>
+                            <td>
+                                {% if achievement.type == 'Publication' %}
+                                    <span class="badge bg-primary">{{ achievement.type }}</span>
+                                {% elif achievement.type == 'Conference' %}
+                                    <span class="badge bg-success">{{ achievement.type }}</span>
+                                {% elif achievement.type == 'Workshop' %}
+                                    <span class="badge bg-warning">{{ achievement.type }}</span>
+                                {% elif achievement.type == 'Patent' %}
+                                    <span class="badge bg-info">{{ achievement.type }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ achievement.type }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ achievement.date }}</td>
+                            <td>{{ achievement.description }}</td>
+                            <td>
+                                {% if achievement.status == 'Approved' %}
+                                    <span class="badge bg-success">{{ achievement.status }}</span>
+                                {% elif achievement.status == 'Rejected' %}
+                                    <span class="badge bg-danger">{{ achievement.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-warning">{{ achievement.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('delete_achievement', achievement_id=achievement.achievement_id) }}" onsubmit="return confirm('Are you sure you want to delete this achievement?')" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No achievements found.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

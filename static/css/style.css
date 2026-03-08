@@ -1,0 +1,171 @@
+.sidebar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+.sidebar .nav-link {
+    color: rgba(255,255,255,.75);
+}
+.sidebar .nav-link:hover {
+    color: #fff;
+}
+.header-gradient {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+.card-blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+.card-purple { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+.card-green { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+.card-orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+.card-red { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: white; }
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.075);
+}
+
+/* Google sign-in button style used on login/register pages */
+.google-btn {
+    background: #fff;
+    color: #444;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px 0;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.google-btn i {
+    margin-right: 8px;
+}
+
+.google-btn:hover {
+    background: #f1f1f1;
+    color: #222;
+}
+
+/* Profile Image Styling */
+.profile-photo,
+.profile-img {
+width:85px;
+height:85px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid white;
+box-shadow:0 3px 8px rgba(0,0,0,0.2);
+margin-bottom:10px;
+}
+
+/* Dashboard Cards Layout */
+.dashboard-container {
+display:flex;
+align-items:flex-start;
+padding:20px;
+}
+
+.profile-section {
+width:150px;
+text-align:center;
+flex-shrink:0;
+}
+
+.dashboard-stats{
+display:flex;
+gap:25px;
+flex-wrap:nowrap;
+flex:1;
+justify-content:flex-start;
+overflow-x:auto;
+padding-bottom:6px;
+}
+
+.stat-card,
+.profile-card{
+width:160px;
+height:170px;
+border-radius:12px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+}
+
+/* ensure inner card element fills container */
+.stat-card .card,
+.profile-card .card {
+width:100%;
+height:100%;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.main-form-card {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        min-height: auto;
+    }
+
+    .header-gradient {
+        padding: 1rem !important;
+    }
+
+    .header-gradient h1 {
+        font-size: 1.1rem;
+        line-height: 1.35;
+    }
+
+    .dashboard-container {
+        padding: 12px 0;
+    }
+
+    .dashboard-stats {
+        justify-content: flex-start;
+        gap: 12px;
+        margin-top: 0;
+        flex-wrap: nowrap;
+    }
+
+    .stat-card,
+    .profile-card {
+        width: calc(50% - 6px);
+        min-width: 140px;
+    }
+
+    .profile-photo,
+    .profile-img {
+        width: 70px;
+        height: 70px;
+        border-width: 2px;
+    }
+
+    .btn-lg {
+        font-size: 1rem;
+        padding: 0.5rem 0.9rem;
+    }
+
+    .login-container {
+        padding: 16px;
+    }
+
+    .login-card {
+        max-width: 100%;
+        padding: 24px 18px;
+    }
+
+    .login-title {
+        font-size: 1.5rem;
+    }
+
+    form .form-control,
+    form .form-select {
+        max-width: 100%;
+    }
+}

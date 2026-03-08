@@ -1,0 +1,79 @@
+{% extends "public_base.html" %}
+
+{% block title %}Faculty Achievement Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="row w-100 justify-content-center g-3 g-md-4">
+        <div class="col-12 text-center mb-3 mb-md-4">
+            <h1 class="display-6 text-white fw-bold mb-3 home-title" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Faculty Achievement Management System</h1>
+            <p class="lead text-white-50">Choose your role to get started</p>
+        </div>
+
+        <div class="col-12 col-sm-10 col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-lg hover-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); transition: all 0.3s ease;">
+                <div class="card-body text-center p-4">
+                    <div class="icon-circle mb-3" style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-graduate fa-2x text-white"></i>
+                    </div>
+                    <h5 class="card-title text-white fw-bold mb-3">Faculty Login</h5>
+                    <p class="card-text text-white-75 mb-4">Access your dashboard to manage achievements</p>
+                    <a href="{{ url_for('faculty_login') }}" class="btn btn-light btn-lg px-4 py-2 fw-bold">Login</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-10 col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-lg hover-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); transition: all 0.3s ease;">
+                <div class="card-body text-center p-4">
+                    <div class="icon-circle mb-3" style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-plus fa-2x text-white"></i>
+                    </div>
+                    <h5 class="card-title text-white fw-bold mb-3">Faculty Register</h5>
+                    <p class="card-text text-white-75 mb-4">Create your account to get started</p>
+                    <a href="{{ url_for('faculty_register') }}" class="btn btn-light btn-lg px-4 py-2 fw-bold">Register</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-10 col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-lg hover-card" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); transition: all 0.3s ease;">
+                <div class="card-body text-center p-4">
+                    <div class="icon-circle mb-3" style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-shield fa-2x text-white"></i>
+                    </div>
+                    <h5 class="card-title text-white fw-bold mb-3">Admin Login</h5>
+                    <p class="card-text text-white-75 mb-4">Administrative access and management</p>
+                    <a href="{{ url_for('admin_login') }}" class="btn btn-light btn-lg px-4 py-2 fw-bold">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+}
+
+.icon-circle {
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover .icon-circle {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .home-title {
+        font-size: 1.9rem;
+    }
+
+    .icon-circle {
+        width: 64px !important;
+        height: 64px !important;
+    }
+}
+</style>
+{% endblock %}
