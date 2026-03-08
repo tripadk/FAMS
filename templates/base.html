@@ -4,131 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Faculty Achievement Management System{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        .sidebar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .sidebar .nav-link {
-            color: rgba(255,255,255,.75);
-        }
-        .sidebar .nav-link:hover {
-            color: #fff;
-        }
-        .header-gradient {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-        .card-blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .card-purple { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
-        .card-green { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
-        .card-orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
-        .card-red { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: white; }
-        .table-hover tbody tr:hover {
-            background-color: rgba(0,0,0,.075);
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                min-height: auto;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
             }
         }
-    </style>
+    </script>
 </head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <nav class="navbar navbar-dark sidebar d-md-none px-3 py-2">
-                <div class="container-fluid px-0">
-                    <a class="navbar-brand fw-semibold" href="#">
-                        <i class="bi bi-list"></i> Menu
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavMenu" aria-controls="mobileNavMenu" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                </div>
-                <div class="collapse w-100 mt-2" id="mobileNavMenu">
-                    <ul class="nav flex-column">
+<body class="font-sans min-h-screen bg-slate-100 text-slate-800">
+    <div class="min-h-screen flex flex-col">
+        <header class="sticky top-0 z-40 bg-white border-b border-slate-200">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="h-16 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <button id="sidebarToggle" class="lg:hidden text-slate-700 hover:text-slate-900">
+                            <i class="fa-solid fa-bars text-xl"></i>
+                        </button>
+                        <a href="{{ url_for('home') }}" class="font-semibold text-slate-900 text-sm sm:text-base">
+                            Faculty Achievement Management System
+                        </a>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white grid place-items-center shadow">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
                         {% if session.get('faculty_id') %}
-                            <li class="nav-item mb-1">
-                                <a class="nav-link px-0" href="{{ url_for('faculty_dashboard') }}"><i class="bi bi-house-door"></i> Dashboard</a>
-                            </li>
-                            <li class="nav-item mb-1">
-                                <a class="nav-link px-0" href="{{ url_for('faculty_profile') }}"><i class="bi bi-person-circle"></i> My Profile</a>
-                            </li>
-                            <li class="nav-item mb-1">
-                                <a class="nav-link px-0" href="{{ url_for('add_achievement') }}"><i class="bi bi-plus-circle"></i> Add Achievement</a>
-                            </li>
-                            <li class="nav-item mb-1">
-                                <a class="nav-link px-0" href="{{ url_for('view_achievements') }}"><i class="bi bi-list-ul"></i> View Achievements</a>
-                            </li>
-                            <li class="nav-item mb-1">
-                                <a class="nav-link px-0" href="{{ url_for('admin_login') }}"><i class="bi bi-shield-lock"></i> Admin Panel</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-0" href="{{ url_for('faculty_logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a>
-                            </li>
+                            <a href="{{ url_for('faculty_logout') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                                <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                            </a>
                         {% elif session.get('admin_id') %}
-                            <li class="nav-item mb-1">
-                                <a class="nav-link px-0" href="{{ url_for('admin_dashboard') }}"><i class="bi bi-house-door"></i> Admin Dashboard</a>
-                            </li>
-                            <li class="nav-item mb-1">
-                                <a class="nav-link px-0" href="{{ url_for('add_faculty') }}"><i class="bi bi-person-plus"></i> Add Faculty</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-0" href="{{ url_for('admin_logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a>
-                            </li>
+                            <a href="{{ url_for('admin_logout') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                                <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                            </a>
                         {% endif %}
-                    </ul>
+                    </div>
                 </div>
-            </nav>
+            </div>
+        </header>
 
-            <nav class="col-md-2 d-none d-md-block sidebar p-3">
-                <h5 class="text-white mb-4">Navigation</h5>
-                <ul class="nav flex-column">
+        <div class="flex flex-1">
+            <aside id="sidebar" class="fixed inset-y-0 left-0 top-16 w-72 bg-slate-900 text-slate-100 p-5 transform -translate-x-full lg:translate-x-0 lg:static lg:top-0 lg:w-64 transition-transform duration-300 z-30">
+                <h2 class="text-lg font-semibold mb-5">Navigation</h2>
+                <nav class="space-y-2">
                     {% if session.get('faculty_id') %}
-                        <li class="nav-item mb-2">
-                            <a class="nav-link" href="{{ url_for('faculty_dashboard') }}"><i class="bi bi-house-door"></i> Dashboard</a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link" href="{{ url_for('faculty_profile') }}"><i class="bi bi-person-circle"></i> My Profile</a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link" href="{{ url_for('add_achievement') }}"><i class="bi bi-plus-circle"></i> Add Achievement</a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link" href="{{ url_for('view_achievements') }}"><i class="bi bi-list-ul"></i> View Achievements</a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link" href="{{ url_for('admin_login') }}"><i class="bi bi-shield-lock"></i> Admin Panel</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('faculty_logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a>
-                        </li>
+                        <a href="{{ url_for('faculty_dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-chart-line mr-2"></i>Dashboard</a>
+                        <a href="{{ url_for('add_achievement') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-plus mr-2"></i>Add Achievement</a>
+                        <a href="{{ url_for('view_achievements') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-table-list mr-2"></i>View Achievements</a>
+                        <a href="{{ url_for('faculty_profile') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-user mr-2"></i>Profile</a>
+                        <a href="{{ url_for('admin_login') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-shield-halved mr-2"></i>Admin Panel</a>
                     {% elif session.get('admin_id') %}
-                        <li class="nav-item mb-2">
-                            <a class="nav-link" href="{{ url_for('admin_dashboard') }}"><i class="bi bi-house-door"></i> Admin Dashboard</a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link" href="{{ url_for('add_faculty') }}"><i class="bi bi-person-plus"></i> Add Faculty</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('admin_logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a>
-                        </li>
+                        <a href="{{ url_for('admin_dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-chart-line mr-2"></i>Dashboard</a>
+                        <a href="{{ url_for('pending_achievements') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-hourglass-half mr-2"></i>Pending Approvals</a>
+                        <a href="{{ url_for('add_faculty') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-user-plus mr-2"></i>Add Faculty</a>
                     {% endif %}
-                </ul>
-            </nav>
-            <main class="col-12 col-md-10 ms-sm-auto px-3 px-md-4 py-3 py-md-4">
-                <div class="header-gradient p-4 mb-4 rounded shadow">
-                    <h1 class="h3 mb-0">Faculty Achievement Management System - VNRVJIET</h1>
-                </div>
+                </nav>
+            </aside>
+
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 lg:ml-0">
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
-                        <div class="alert alert-info">
+                        <div class="space-y-2 mb-6">
                             {% for message in messages %}
-                                {{ message }}
+                                <div class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-blue-800">
+                                    {{ message }}
+                                </div>
                             {% endfor %}
                         </div>
                     {% endif %}
@@ -136,7 +84,20 @@
                 {% block content %}{% endblock %}
             </main>
         </div>
+
+        <footer class="bg-white border-t border-slate-200 text-center text-sm text-slate-500 py-4">
+            © 2026 Faculty Achievement Management System
+        </footer>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        if (sidebar && sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+        }
+    </script>
 </body>
 </html>

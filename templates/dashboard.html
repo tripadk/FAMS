@@ -3,66 +3,50 @@
 {% block title %}Faculty Dashboard{% endblock %}
 
 {% block content %}
-<div class="dashboard-container mb-4">
-    <div class="dashboard-stats">
-            <div class="stat-card">
-                <div class="card card-blue text-center shadow">
-                    <div class="card-body">
-                        <i class="bi bi-trophy fs-1"></i>
-                        <h5 class="card-title">Total</h5>
-                        <p class="card-text fs-3">{{ faculty.achievements|length if faculty.achievements else 0 }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="card card-purple text-center shadow">
-                    <div class="card-body">
-                        <i class="bi bi-book fs-1"></i>
-                        <h5 class="card-title">Publications</h5>
-                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Publication')|list|length }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="card card-green text-center shadow">
-                    <div class="card-body">
-                        <i class="bi bi-people fs-1"></i>
-                        <h5 class="card-title">Conferences</h5>
-                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Conference')|list|length }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="card card-orange text-center shadow">
-                    <div class="card-body">
-                        <i class="bi bi-tools fs-1"></i>
-                        <h5 class="card-title">Workshops</h5>
-                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Workshop')|list|length }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="card card-red text-center shadow">
-                    <div class="card-body">
-                        <i class="bi bi-lightbulb fs-1"></i>
-                        <h5 class="card-title">Patents</h5>
-                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Patent')|list|length }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="card card-blue text-center shadow">
-                    <div class="card-body">
-                        <i class="bi bi-award fs-1"></i>
-                        <h5 class="card-title">Awards</h5>
-                        <p class="card-text fs-3">{{ faculty.achievements|selectattr('type', 'equalto', 'Award')|list|length }}</p>
-                    </div>
-                </div>
-            </div>
+<div class="mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Faculty Dashboard</h1>
+    <p class="text-slate-600 mt-1">Track your approved achievements at a glance.</p>
+</div>
+
+<div class="mb-6 rounded-2xl bg-white p-5 shadow-lg border border-slate-100">
+    <p class="text-sm text-slate-500">Approved Achievements</p>
+    <p class="text-3xl font-bold text-slate-900">{{ approved_achievements|length }}</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+    <div class="rounded-2xl p-6 text-white shadow-lg hover:scale-105 transition bg-gradient-to-r from-blue-600 to-indigo-600">
+        <i class="fa-solid fa-book-open text-3xl mb-3"></i>
+        <p class="text-sm opacity-90">Publications</p>
+        <p class="text-3xl font-bold">{{ approved_achievements|selectattr('type', 'equalto', 'Publication')|list|length }}</p>
+    </div>
+    <div class="rounded-2xl p-6 text-white shadow-lg hover:scale-105 transition bg-gradient-to-r from-emerald-500 to-teal-600">
+        <i class="fa-solid fa-users text-3xl mb-3"></i>
+        <p class="text-sm opacity-90">Conferences</p>
+        <p class="text-3xl font-bold">{{ approved_achievements|selectattr('type', 'equalto', 'Conference')|list|length }}</p>
+    </div>
+    <div class="rounded-2xl p-6 text-white shadow-lg hover:scale-105 transition bg-gradient-to-r from-orange-500 to-amber-600">
+        <i class="fa-solid fa-screwdriver-wrench text-3xl mb-3"></i>
+        <p class="text-sm opacity-90">Workshops</p>
+        <p class="text-3xl font-bold">{{ approved_achievements|selectattr('type', 'equalto', 'Workshop')|list|length }}</p>
+    </div>
+    <div class="rounded-2xl p-6 text-white shadow-lg hover:scale-105 transition bg-gradient-to-r from-fuchsia-500 to-purple-600">
+        <i class="fa-solid fa-lightbulb text-3xl mb-3"></i>
+        <p class="text-sm opacity-90">Patents</p>
+        <p class="text-3xl font-bold">{{ approved_achievements|selectattr('type', 'equalto', 'Patent')|list|length }}</p>
+    </div>
+    <div class="rounded-2xl p-6 text-white shadow-lg hover:scale-105 transition bg-gradient-to-r from-rose-500 to-pink-600">
+        <i class="fa-solid fa-award text-3xl mb-3"></i>
+        <p class="text-sm opacity-90">Awards</p>
+        <p class="text-3xl font-bold">{{ approved_achievements|selectattr('type', 'equalto', 'Award')|list|length }}</p>
     </div>
 </div>
-<div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    <a href="{{ url_for('add_achievement') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle"></i> Add Achievement</a>
-    <a href="{{ url_for('view_achievements') }}" class="btn btn-secondary btn-lg"><i class="bi bi-list-ul"></i> View Achievements</a>
+
+<div class="mt-8 flex flex-wrap gap-3">
+    <a href="{{ url_for('add_achievement') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition">
+        <i class="fa-solid fa-plus mr-2"></i>Add Achievement
+    </a>
+    <a href="{{ url_for('view_achievements') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-lg transition">
+        <i class="fa-solid fa-table-list mr-2"></i>View Achievements
+    </a>
 </div>
 {% endblock %}

@@ -3,139 +3,91 @@
 {% block title %}My Profile{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <h2 class="mb-4"><i class="bi bi-person-circle"></i> My Profile</h2>
-
-    <!-- Faculty Information -->
-    <div class="row mb-4">
-        <div class="col-12 col-lg-4 mb-3 mb-lg-0">
-            <div class="card h-100">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0"><i class="bi bi-person"></i> Personal Information</h5>
-                    <a href="{{ url_for('edit_profile') }}" class="btn btn-light btn-sm"><i class="bi bi-pencil"></i> Edit</a>
-                </div>
-                <div class="card-body">
-                    {% if faculty.profile_photo %}
-                        <div class="text-center mb-3">
-                            <img class="profile-img"
-                                 src="{{ url_for('static', filename='uploads/profile_photos/' + faculty.profile_photo) }}"
-                                 alt="{{ faculty.name }}">
-                        </div>
-                    {% else %}
-                        <div class="text-center mb-3">
-                            <img class="profile-img"
-                                 src="{{ url_for('static', filename='images/default_profile.svg') }}"
-                                 alt="Default Profile">
-                        </div>
-                    {% endif %}
-                    <p class="mb-2"><strong>Name:</strong> {{ faculty.name }}</p>
-                    <p class="mb-2"><strong>Department:</strong> {{ faculty.department }}</p>
-                    <p class="mb-2"><strong>Designation:</strong> {{ faculty.designation }}</p>
-                    <p class="mb-0"><strong>Email:</strong> {{ faculty.email }}</p>
-                </div>
-            </div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold">Profile</h2>
+            <a href="{{ url_for('edit_profile') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition">Edit</a>
         </div>
-
-        <!-- Statistics -->
-        <div class="col-12 col-lg-8">
-            <div class="row">
-                <div class="col-12 col-sm-6 col-xl-3 mb-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <i class="bi bi-trophy fs-1 text-warning"></i>
-                            <h5 class="card-title">Total Achievements</h5>
-                            <p class="card-text fs-3">{{ total_achievements }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3 mb-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <i class="bi bi-book fs-1 text-primary"></i>
-                            <h5 class="card-title">Publications</h5>
-                            <p class="card-text fs-3">{{ publications }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3 mb-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <i class="bi bi-tools fs-1 text-success"></i>
-                            <h5 class="card-title">Workshops</h5>
-                            <p class="card-text fs-3">{{ workshops }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3 mb-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <i class="bi bi-lightbulb fs-1 text-info"></i>
-                            <h5 class="card-title">Patents</h5>
-                            <p class="card-text fs-3">{{ patents }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Achievements Table -->
-    <div class="card">
-        <div class="card-header bg-secondary text-white">
-            <h5 class="card-title mb-0"><i class="bi bi-list-ul"></i> My Achievements</h5>
-        </div>
-        <div class="card-body">
-            {% if achievements %}
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead class="table-dark">
-                            <tr>
-                                <th><i class="bi bi-tag"></i> Title</th>
-                                <th><i class="bi bi-tags"></i> Type</th>
-                                <th><i class="bi bi-calendar"></i> Date</th>
-                                <th><i class="bi bi-file-text"></i> Description</th>
-                                <th><i class="bi bi-check-circle"></i> Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for achievement in achievements %}
-                                <tr>
-                                    <td>{{ achievement.title }}</td>
-                                    <td>
-                                        {% if achievement.type == 'Publication' %}
-                                            <span class="badge bg-primary">{{ achievement.type }}</span>
-                                        {% elif achievement.type == 'Conference' %}
-                                            <span class="badge bg-success">{{ achievement.type }}</span>
-                                        {% elif achievement.type == 'Workshop' %}
-                                            <span class="badge bg-warning">{{ achievement.type }}</span>
-                                        {% elif achievement.type == 'Patent' %}
-                                            <span class="badge bg-info">{{ achievement.type }}</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">{{ achievement.type }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ achievement.date }}</td>
-                                    <td>{{ achievement.description }}</td>
-                                    <td>
-                                        {% if achievement.status == 'Approved' %}
-                                            <span class="badge bg-success">{{ achievement.status }}</span>
-                                        {% elif achievement.status == 'Rejected' %}
-                                            <span class="badge bg-danger">{{ achievement.status }}</span>
-                                        {% else %}
-                                            <span class="badge bg-warning">{{ achievement.status }}</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+        <div class="text-center">
+            {% if faculty.profile_photo %}
+                <img src="{{ url_for('static', filename='uploads/profile_photos/' + faculty.profile_photo) }}" alt="{{ faculty.name }}" class="w-24 h-24 rounded-full object-cover mx-auto shadow">
             {% else %}
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> No achievements submitted yet.
-                </div>
+                <img src="{{ url_for('static', filename='images/default_profile.svg') }}" alt="Default Profile" class="w-24 h-24 rounded-full object-cover mx-auto shadow">
             {% endif %}
         </div>
+        <div class="mt-4 space-y-2 text-sm">
+            <p><span class="font-semibold">Name:</span> {{ faculty.name }}</p>
+            <p><span class="font-semibold">Department:</span> {{ faculty.department }}</p>
+            <p><span class="font-semibold">Designation:</span> {{ faculty.designation }}</p>
+            <p><span class="font-semibold">Email:</span> {{ faculty.email }}</p>
+        </div>
     </div>
+
+    <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="rounded-2xl p-5 bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-lg hover:scale-105 transition">
+            <i class="fa-solid fa-trophy text-2xl mb-2"></i>
+            <p class="text-sm">Total Achievements</p>
+            <p class="text-2xl font-bold">{{ total_achievements }}</p>
+        </div>
+        <div class="rounded-2xl p-5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg hover:scale-105 transition">
+            <i class="fa-solid fa-book-open text-2xl mb-2"></i>
+            <p class="text-sm">Publications</p>
+            <p class="text-2xl font-bold">{{ publications }}</p>
+        </div>
+        <div class="rounded-2xl p-5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg hover:scale-105 transition">
+            <i class="fa-solid fa-screwdriver-wrench text-2xl mb-2"></i>
+            <p class="text-sm">Workshops</p>
+            <p class="text-2xl font-bold">{{ workshops }}</p>
+        </div>
+        <div class="rounded-2xl p-5 bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-lg hover:scale-105 transition">
+            <i class="fa-solid fa-lightbulb text-2xl mb-2"></i>
+            <p class="text-sm">Patents</p>
+            <p class="text-2xl font-bold">{{ patents }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="mt-6 bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+    <h3 class="text-xl font-semibold mb-4">My Achievements</h3>
+    {% if achievements %}
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="min-w-full text-sm">
+                <thead class="bg-slate-100 sticky top-0">
+                    <tr class="text-left text-slate-700">
+                        <th class="px-4 py-3">Title</th>
+                        <th class="px-4 py-3">Type</th>
+                        <th class="px-4 py-3">Date</th>
+                        <th class="px-4 py-3">Description</th>
+                        <th class="px-4 py-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for achievement in achievements %}
+                        <tr class="odd:bg-white even:bg-slate-50 hover:bg-blue-50 transition">
+                            <td class="px-4 py-3">{{ achievement.title }}</td>
+                            <td class="px-4 py-3">{{ achievement.type }}</td>
+                            <td class="px-4 py-3">{{ achievement.date }}</td>
+                            <td class="px-4 py-3">{{ achievement.description }}</td>
+                            <td class="px-4 py-3">
+                                {% if achievement.status|lower == 'approved' %}
+                                    <span class="px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-700">Approved</span>
+                                {% elif achievement.status|lower == 'rejected' %}
+                                    <span class="px-2 py-1 rounded-full text-xs bg-rose-100 text-rose-700">Rejected</span>
+                                {% else %}
+                                    <span class="px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-700">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center text-slate-600">
+            <i class="fa-regular fa-folder-open text-4xl mb-3 text-slate-400"></i>
+            <p class="text-lg font-medium">No achievements yet. Start by adding one!</p>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

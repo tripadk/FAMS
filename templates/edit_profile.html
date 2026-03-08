@@ -3,76 +3,55 @@
 {% block title %}Edit Profile{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="card-title mb-0"><i class="bi bi-pencil-square"></i> Edit Profile</h4>
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8">
+        <h2 class="text-2xl font-semibold mb-6"><i class="fa-solid fa-user-pen mr-2 text-blue-600"></i>Edit Profile</h2>
+        <form method="POST" enctype="multipart/form-data" class="space-y-5">
+            <div>
+                <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                <input type="text" id="name" name="name" value="{{ faculty.name }}" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
             </div>
-            <div class="card-body">
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        <div class="alert alert-success">
-                            {% for message in messages %}
-                                {{ message }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
-                <form method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{ faculty.name }}" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email (Read-only)</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ faculty.email }}" disabled>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="department" class="form-label">Department</label>
-                        <select name="department" class="form-control" required>
-                            <option value="">Select Department</option>
-                            <option value="CSE" {% if faculty.department == 'CSE' %}selected{% endif %}>CSE</option>
-                            <option value="CSM" {% if faculty.department == 'CSM' %}selected{% endif %}>CSM</option>
-                            <option value="CSO" {% if faculty.department == 'CSO' %}selected{% endif %}>CSO</option>
-                            <option value="CSD" {% if faculty.department == 'CSD' %}selected{% endif %}>CSD</option>
-                            <option value="AID" {% if faculty.department == 'AID' %}selected{% endif %}>AID</option>
-                            <option value="CSB" {% if faculty.department == 'CSB' %}selected{% endif %}>CSB</option>
-                            <option value="ME" {% if faculty.department == 'ME' %}selected{% endif %}>ME</option>
-                            <option value="ECE" {% if faculty.department == 'ECE' %}selected{% endif %}>ECE</option>
-                            <option value="RAI" {% if faculty.department == 'RAI' %}selected{% endif %}>RAI</option>
-                            <option value="EEE" {% if faculty.department == 'EEE' %}selected{% endif %}>EEE</option>
-                            <option value="CE" {% if faculty.department == 'CE' %}selected{% endif %}>CE</option>
-                            <option value="CSY" {% if faculty.department == 'CSY' %}selected{% endif %}>CSY</option>
-                            <option value="AE" {% if faculty.department == 'AE' %}selected{% endif %}>AE</option>
-                        </select>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="designation" class="form-label">Designation</label>
-                        <input type="text" class="form-control" id="designation" name="designation" value="{{ faculty.designation }}" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password (Leave blank to keep current password)</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password or leave blank">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="profile_photo" class="form-label">Profile Photo (JPG, PNG, optional)</label>
-                        <input type="file" class="form-control" id="profile_photo" name="profile_photo" accept=".jpg,.jpeg,.png">
-                        <small class="form-text text-muted">Upload a new passport-size photo (JPG, PNG, max 20MB).</small>
-                    </div>
-                    
-                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
-                        <a href="{{ url_for('faculty_profile') }}" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Save Changes</button>
-                    </div>
-                </form>
+            <div>
+                <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email (Read-only)</label>
+                <input type="email" id="email" value="{{ faculty.email }}" disabled class="w-full p-3 border rounded-lg bg-slate-100 text-slate-500">
             </div>
-        </div>
+            <div>
+                <label for="department" class="block text-sm font-medium text-slate-700 mb-1">Department</label>
+                <select id="department" name="department" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <option value="">Select Department</option>
+                    <option value="CSE" {% if faculty.department == 'CSE' %}selected{% endif %}>CSE</option>
+                    <option value="CSM" {% if faculty.department == 'CSM' %}selected{% endif %}>CSM</option>
+                    <option value="CSO" {% if faculty.department == 'CSO' %}selected{% endif %}>CSO</option>
+                    <option value="CSD" {% if faculty.department == 'CSD' %}selected{% endif %}>CSD</option>
+                    <option value="AID" {% if faculty.department == 'AID' %}selected{% endif %}>AID</option>
+                    <option value="CSB" {% if faculty.department == 'CSB' %}selected{% endif %}>CSB</option>
+                    <option value="ME" {% if faculty.department == 'ME' %}selected{% endif %}>ME</option>
+                    <option value="ECE" {% if faculty.department == 'ECE' %}selected{% endif %}>ECE</option>
+                    <option value="RAI" {% if faculty.department == 'RAI' %}selected{% endif %}>RAI</option>
+                    <option value="EEE" {% if faculty.department == 'EEE' %}selected{% endif %}>EEE</option>
+                    <option value="CE" {% if faculty.department == 'CE' %}selected{% endif %}>CE</option>
+                    <option value="CSY" {% if faculty.department == 'CSY' %}selected{% endif %}>CSY</option>
+                    <option value="AE" {% if faculty.department == 'AE' %}selected{% endif %}>AE</option>
+                </select>
+            </div>
+            <div>
+                <label for="designation" class="block text-sm font-medium text-slate-700 mb-1">Designation</label>
+                <input type="text" id="designation" name="designation" value="{{ faculty.designation }}" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password (optional)</label>
+                <input type="password" id="password" name="password" placeholder="Leave blank to keep current password" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+                <label for="profile_photo" class="block text-sm font-medium text-slate-700 mb-1">Profile Photo (optional)</label>
+                <input type="file" id="profile_photo" name="profile_photo" accept=".jpg,.jpeg,.png" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <p class="text-xs text-slate-500 mt-1">JPG/PNG, max 20MB.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ url_for('faculty_profile') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-lg transition">Cancel</a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition">Save Changes</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

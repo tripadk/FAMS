@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, send_file
 from authlib.integrations.flask_client import OAuth
+from flask_mail import Mail, Message
 from models import db, Faculty, Achievements, Admin
 import os
 from werkzeug.utils import secure_filename
@@ -37,6 +38,14 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.secret_key = 'your_secret_key_here'  # Change this to a random secret key
+app.config["MAIL_SERVER"] = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
+app.config["MAIL_PORT"] = int(os.environ.get("MAIL_PORT", 587))
+app.config["MAIL_USE_TLS"] = os.environ.get("MAIL_USE_TLS", "true").lower() == "true"
+app.config["MAIL_USE_SSL"] = os.environ.get("MAIL_USE_SSL", "false").lower() == "true"
+app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD")
+app.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_DEFAULT_SENDER", app.config["MAIL_USERNAME"])
+app.config["MAIL_SUPPRESS_SEND"] = os.environ.get("MAIL_SUPPRESS_SEND", "false").lower() == "true"
 
 # Google OAuth configuration with Authlib
 oauth = OAuth(app)
@@ -49,6 +58,7 @@ google = oauth.register(
 )
 
 db.init_app(app)
+mail = Mail(app)
 
 # File upload configuration
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
@@ -102,6 +112,26 @@ def save_upload_file(file, upload_type):
     
     file.save(file_path)
     return relative_path, None
+
+def send_achievement_submission_email(faculty, achievement):
+    admin_email = os.environ.get("ADMIN_EMAIL")
+    if not admin_email:
+        admin = Admin.query.first()
+        admin_email = admin.email if admin else None
+
+    if not admin_email or not app.config.get("MAIL_USERNAME") or not app.config.get("MAIL_PASSWORD"):
+        return
+
+    msg = Message(
+        subject="New Achievement Submitted",
+        recipients=[admin_email]
+    )
+    msg.body = (
+        f"Faculty Name: {faculty.name}\n"
+        f"Achievement Type: {achievement.type}\n"
+        f"Title: {achievement.title}"
+    )
+    mail.send(msg)
 
 def init_db():
     """Initialize the database by creating all tables."""
@@ -236,7 +266,8 @@ def faculty_dashboard():
     if 'faculty_id' not in session or session.get('user_type') != 'faculty':
         return redirect(url_for('faculty_login'))
     faculty = Faculty.query.get(session['faculty_id'])
-    return render_template('dashboard.html', faculty=faculty)
+    approved_achievements = [a for a in faculty.achievements if (a.status or '').lower() == 'approved']
+    return render_template('dashboard.html', faculty=faculty, approved_achievements=approved_achievements)
 
 @app.route('/faculty/logout')
 def faculty_logout():
@@ -281,10 +312,16 @@ def add_achievement():
             description=description,
             date=date,
             proof_file=file_path,
-            certificate_file=certificate_path
+            certificate_file=certificate_path,
+            status='pending'
         )
         db.session.add(achievement)
         db.session.commit()
+        try:
+            faculty = Faculty.query.get(session['faculty_id'])
+            send_achievement_submission_email(faculty, achievement)
+        except Exception as e:
+            print(f"Email notification failed: {e}")
         flash('Achievement added successfully!')
         return redirect(url_for('faculty_dashboard'))
     return render_template('add_achievement.html')
@@ -356,20 +393,20 @@ def approve_achievement(achievement_id):
     if 'admin_id' not in session or session.get('user_type') != 'admin':
         return redirect(url_for('admin_login'))
     achievement = Achievements.query.get_or_404(achievement_id)
-    achievement.status = 'Approved'
+    achievement.status = 'approved'
     db.session.commit()
     flash('Achievement approved!')
-    return redirect(url_for('admin_dashboard'))
+    return redirect(request.referrer or url_for('admin_dashboard'))
 
 @app.route('/admin/reject_achievement/<int:achievement_id>', methods=['POST'])
 def reject_achievement(achievement_id):
     if 'admin_id' not in session or session.get('user_type') != 'admin':
         return redirect(url_for('admin_login'))
     achievement = Achievements.query.get_or_404(achievement_id)
-    achievement.status = 'Rejected'
+    achievement.status = 'rejected'
     db.session.commit()
     flash('Achievement rejected!')
-    return redirect(url_for('admin_dashboard'))
+    return redirect(request.referrer or url_for('admin_dashboard'))
 
 @app.route('/admin/download_certificate/<int:achievement_id>')
 def download_certificate(achievement_id):
@@ -401,6 +438,7 @@ def admin_dashboard():
         return redirect(url_for('admin_login'))
     department = request.args.get('department')
     achievement_type = request.args.get('type')
+    year = request.args.get('year')
     month = request.args.get('month')
     faculty_name = request.args.get('faculty')
     query = db.session.query(Achievements, Faculty).join(Faculty, Achievements.faculty_id == Faculty.faculty_id)
@@ -408,6 +446,8 @@ def admin_dashboard():
         query = query.filter(Faculty.department == department)
     if achievement_type:
         query = query.filter(Achievements.type == achievement_type)
+    if year:
+        query = query.filter(db.func.strftime('%Y', Achievements.date) == year)
     if month:
         query = query.filter(db.func.strftime('%Y-%m', Achievements.date) == month)
     if faculty_name:
@@ -416,26 +456,44 @@ def admin_dashboard():
     departments = db.session.query(Faculty.department).distinct().all()
     departments = [d[0] for d in departments]
     types = ['Publication', 'Conference', 'Workshop', 'Patent', 'Award']
+    years = db.session.query(db.func.strftime('%Y', Achievements.date)).distinct().order_by(db.func.strftime('%Y', Achievements.date).desc()).all()
+    years = [y[0] for y in years if y[0]]
     faculty_names = db.session.query(Faculty.name).distinct().all()
     faculty_names = [f[0] for f in faculty_names]
     
     # Analytics data
-    dept_counts = db.session.query(Faculty.department, db.func.count(Achievements.achievement_id)).join(Achievements).filter(Achievements.status == 'Approved').group_by(Faculty.department).all()
+    dept_counts = db.session.query(Faculty.department, db.func.count(Achievements.achievement_id)).join(Achievements).filter(db.func.lower(Achievements.status) == 'approved').group_by(Faculty.department).all()
     dept_labels = [d[0] for d in dept_counts]
     dept_data = [d[1] for d in dept_counts]
     
-    monthly_counts = db.session.query(db.func.strftime('%Y-%m', Achievements.date), db.func.count(Achievements.achievement_id)).filter(Achievements.status == 'Approved').group_by(db.func.strftime('%Y-%m', Achievements.date)).order_by(db.func.strftime('%Y-%m', Achievements.date)).all()
+    monthly_counts = db.session.query(db.func.strftime('%Y-%m', Achievements.date), db.func.count(Achievements.achievement_id)).filter(db.func.lower(Achievements.status) == 'approved').group_by(db.func.strftime('%Y-%m', Achievements.date)).order_by(db.func.strftime('%Y-%m', Achievements.date)).all()
     monthly_labels = [m[0] for m in monthly_counts]
     monthly_data = [m[1] for m in monthly_counts]
     
-    type_counts = db.session.query(Achievements.type, db.func.count(Achievements.achievement_id)).filter(Achievements.status == 'Approved').group_by(Achievements.type).all()
+    type_counts = db.session.query(Achievements.type, db.func.count(Achievements.achievement_id)).filter(db.func.lower(Achievements.status) == 'approved').group_by(Achievements.type).all()
     type_labels = [t[0] for t in type_counts]
     type_data = [t[1] for t in type_counts]
+
+    achievement_totals = {
+        "publications": Achievements.query.filter_by(type='Publication').count(),
+        "conferences": Achievements.query.filter_by(type='Conference').count(),
+        "workshops": Achievements.query.filter_by(type='Workshop').count(),
+        "patents": Achievements.query.filter_by(type='Patent').count(),
+        "awards": Achievements.query.filter_by(type='Award').count()
+    }
     
-    return render_template('admin_dashboard.html', results=results, departments=departments, types=types, faculty_names=faculty_names, selected_dept=department, selected_type=achievement_type, selected_month=month, selected_faculty=faculty_name,
+    return render_template('admin_dashboard.html', results=results, departments=departments, types=types, years=years, faculty_names=faculty_names, selected_dept=department, selected_type=achievement_type, selected_year=year, selected_month=month, selected_faculty=faculty_name,
                            dept_labels=json.dumps(dept_labels), dept_data=json.dumps(dept_data),
                            monthly_labels=json.dumps(monthly_labels), monthly_data=json.dumps(monthly_data),
-                           type_labels=json.dumps(type_labels), type_data=json.dumps(type_data))
+                           type_labels=json.dumps(type_labels), type_data=json.dumps(type_data),
+                           achievement_totals=achievement_totals)
+
+@app.route('/admin/pending_achievements')
+def pending_achievements():
+    if 'admin_id' not in session or session.get('user_type') != 'admin':
+        return redirect(url_for('admin_login'))
+    pending_results = db.session.query(Achievements, Faculty).join(Faculty, Achievements.faculty_id == Faculty.faculty_id).filter(db.func.lower(Achievements.status) == 'pending').all()
+    return render_template('pending_achievements.html', pending_results=pending_results)
 
 @app.route('/admin/logout')
 def admin_logout():
@@ -481,7 +539,7 @@ def export_achievements():
     # Query achievements for the month
     start_date = datetime.datetime.strptime(month + '-01', '%Y-%m-%d').date()
     end_date = (start_date.replace(day=28) + datetime.timedelta(days=4)).replace(day=1) - datetime.timedelta(days=1)
-    query = db.session.query(Achievements, Faculty).join(Faculty).filter(Achievements.date >= start_date, Achievements.date <= end_date, Achievements.status == 'Approved')
+    query = db.session.query(Achievements, Faculty).join(Faculty).filter(Achievements.date >= start_date, Achievements.date <= end_date, db.func.lower(Achievements.status) == 'approved')
     results = query.all()
     
     if format_type == 'csv':

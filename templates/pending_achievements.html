@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Achievements{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+    <h2 class="text-2xl font-semibold mb-5">Pending Achievements</h2>
+
+    {% if pending_results %}
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="min-w-full text-sm">
+                <thead class="bg-slate-100 sticky top-0">
+                    <tr class="text-left text-slate-700">
+                        <th class="px-4 py-3">Faculty</th>
+                        <th class="px-4 py-3">Department</th>
+                        <th class="px-4 py-3">Title</th>
+                        <th class="px-4 py-3">Type</th>
+                        <th class="px-4 py-3">Date</th>
+                        <th class="px-4 py-3">Description</th>
+                        <th class="px-4 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for achievement, faculty in pending_results %}
+                        <tr class="odd:bg-white even:bg-slate-50 hover:bg-blue-50 transition">
+                            <td class="px-4 py-3">{{ faculty.name }}</td>
+                            <td class="px-4 py-3">{{ faculty.department }}</td>
+                            <td class="px-4 py-3">{{ achievement.title }}</td>
+                            <td class="px-4 py-3">{{ achievement.type }}</td>
+                            <td class="px-4 py-3">{{ achievement.date }}</td>
+                            <td class="px-4 py-3">{{ achievement.description }}</td>
+                            <td class="px-4 py-3">
+                                <div class="flex flex-wrap gap-2">
+                                    <form method="POST" action="{{ url_for('approve_achievement', achievement_id=achievement.achievement_id) }}">
+                                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition">Approve</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('reject_achievement', achievement_id=achievement.achievement_id) }}">
+                                        <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition">Reject</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center text-slate-600">
+            <i class="fa-regular fa-circle-check text-4xl mb-3 text-slate-400"></i>
+            <p class="text-lg font-medium">No pending achievements. You're all caught up!</p>
+        </div>
+    {% endif %}
+
+    <div class="mt-5">
+        <a href="{{ url_for('admin_dashboard') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-lg transition">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -21,7 +21,7 @@ class Achievements(db.Model):
     date = db.Column(db.Date, nullable=False)
     proof_file = db.Column(db.String(200))
     certificate_file = db.Column(db.String(200))
-    status = db.Column(db.String(20), default='Pending')
+    status = db.Column(db.String(20), default='pending')
 
 class Admin(db.Model):
     admin_id = db.Column(db.Integer, primary_key=True)
