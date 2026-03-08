@@ -21,9 +21,21 @@ GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+database_url = os.getenv("DATABASE_URL")
+
+if database_url:
+    # Render provides postgres:// but SQLAlchemy requires postgresql://
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.secret_key = 'your_secret_key_here'  # Change this to a random secret key
 
 # Google OAuth configuration with Authlib
@@ -44,7 +56,12 @@ ALLOWED_CERTIFICATE_EXTENSIONS = {'pdf'}
 ALLOWED_PHOTO_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 
 # Create upload folders if they don't exist
-UPLOAD_SUBFOLDERS = ['uploads', 'uploads/certificates', 'static/uploads', 'static/uploads/profile_photos']
+UPLOAD_SUBFOLDERS = [
+    app.config["UPLOAD_FOLDER"],
+    os.path.join(app.config["UPLOAD_FOLDER"], "certificates"),
+    'static/uploads',
+    'static/uploads/profile_photos'
+]
 for folder in UPLOAD_SUBFOLDERS:
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -75,8 +92,8 @@ def save_upload_file(file, upload_type):
     unique_filename = f"{uuid.uuid4()}_{filename}"
     
     if upload_type == 'certificate':
-        file_path = os.path.join('uploads/certificates', unique_filename)
-        relative_path = f"certificates/{unique_filename}"
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], "certificates", unique_filename)
+        relative_path = file_path
     elif upload_type == 'photo':
         file_path = os.path.join('static/uploads/profile_photos', unique_filename)
         relative_path = f"uploads/profile_photos/{unique_filename}"
@@ -167,9 +184,9 @@ def google_callback():
         return redirect(url_for('faculty_login'))
     
     email = user_info.get('email', '')
-    if not email.lower().endswith('@vnrvjiet.in'):
-        flash('Only VNRVJIET faculty email accounts are allowed.')
-        return redirect(url_for('faculty_login'))
+    if not email.endswith("@vnrvjiet.in"):
+        flash("Only VNRVJIET faculty are allowed to login.")
+        return redirect(url_for("faculty_login"))
     
     faculty = Faculty.query.filter_by(email=email).first()
     if not faculty:
