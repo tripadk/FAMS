@@ -551,15 +551,6 @@ def export_achievements():
         flash('Invalid format.')
         return redirect(url_for('admin_dashboard'))
 
-if __name__ == '__main__':
-    init_db()
-    try:
-        local_ip = socket.gethostbyname(socket.gethostname())
-        if local_ip.startswith("127."):
-            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-                s.connect(("8.8.8.8", 80))
-                local_ip = s.getsockname()[0]
-    except Exception:
-        local_ip = "127.0.0.1"
-    print(f"Access the app on your network: http://{local_ip}:5000")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
