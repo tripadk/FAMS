@@ -14,6 +14,7 @@ from fpdf import FPDF
 import uuid
 import socket
 from dotenv import load_dotenv
+from sqlalchemy import inspect, text
 
 load_dotenv()
 
@@ -60,6 +61,19 @@ google = oauth.register(
 
 db.init_app(app)
 mail = Mail(app)
+
+def ensure_faculty_added_by_column():
+    """Add faculty.added_by column for existing databases if missing."""
+    with app.app_context():
+        inspector = inspect(db.engine)
+        if not inspector.has_table('faculty'):
+            return
+        column_names = [column['name'] for column in inspector.get_columns('faculty')]
+        if 'added_by' not in column_names:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE faculty ADD COLUMN added_by VARCHAR(120)"))
+
+ensure_faculty_added_by_column()
 
 # File upload configuration
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
@@ -541,7 +555,9 @@ def uploaded_file(filename):
 
 @app.route('/admin/add_faculty', methods=['GET', 'POST'])
 def add_faculty():
-    if session.get("role") != "admin":
+    if "user_email" not in session:
+        return redirect(url_for("faculty_login"))
+    if session.get("role") not in ("admin", "faculty"):
         abort(403)
     if request.method == 'POST':
         name = request.form['name']
@@ -553,11 +569,20 @@ def add_faculty():
         if existing:
             flash('Email already exists.')
             return redirect(url_for('add_faculty'))
-        new_faculty = Faculty(name=name, email=email, password=password, department=department, designation=designation)
+        new_faculty = Faculty(
+            name=name,
+            email=email,
+            password=password,
+            department=department,
+            designation=designation,
+            added_by=session["user_email"]
+        )
         db.session.add(new_faculty)
         db.session.commit()
         flash('Faculty added successfully.')
-        return redirect(url_for('admin_dashboard'))
+        if session.get("role") == "admin":
+            return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('faculty_dashboard'))
     return render_template('add_faculty.html')
 
 @app.route('/admin/export_achievements')

@@ -57,6 +57,7 @@
                 <nav class="space-y-2">
                     {% if session.get('role') == 'faculty' %}
                         <a href="{{ url_for('faculty_dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-chart-line mr-2"></i>Dashboard</a>
+                        <a href="{{ url_for('add_faculty') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-user-plus mr-2"></i>Add Faculty</a>
                         <a href="{{ url_for('add_achievement') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-plus mr-2"></i>Add Achievement</a>
                         <a href="{{ url_for('view_achievements') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-table-list mr-2"></i>View Achievements</a>
                         <a href="{{ url_for('faculty_profile') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-user mr-2"></i>Profile</a>
@@ -64,6 +65,7 @@
                         <a href="{{ url_for('admin_dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-chart-line mr-2"></i>Dashboard</a>
                         <a href="{{ url_for('add_faculty') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-user-plus mr-2"></i>Add Faculty</a>
                         <a href="{{ url_for('manage_faculty') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-users mr-2"></i>Manage Faculty</a>
+                        <a href="{{ url_for('manage_faculty') }}#remove-faculty" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-user-minus mr-2"></i>Remove Faculty</a>
                         <a href="{{ url_for('admin_dashboard') }}#reports" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-chart-pie mr-2"></i>Reports</a>
                     {% endif %}
                 </nav>

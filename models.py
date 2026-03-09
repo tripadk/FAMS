@@ -9,6 +9,7 @@ class Faculty(db.Model):
     password = db.Column(db.String(100), nullable=False)
     department = db.Column(db.String(100), nullable=False)
     designation = db.Column(db.String(100), nullable=False)
+    added_by = db.Column(db.String(120))
     profile_photo = db.Column(db.String(200))
     achievements = db.relationship('Achievements', backref='faculty', lazy=True)
 

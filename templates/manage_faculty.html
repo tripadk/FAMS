@@ -5,7 +5,7 @@
 {% block content %}
 <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
     <div class="flex items-center justify-between mb-5">
-        <h2 class="text-2xl font-semibold">Manage Faculty</h2>
+        <h2 id="remove-faculty" class="text-2xl font-semibold">Manage Faculty</h2>
         <a href="{{ url_for('add_faculty') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
             <i class="fa-solid fa-user-plus mr-1"></i>Add Faculty
         </a>
@@ -19,7 +19,7 @@
                         <th class="px-4 py-3">Name</th>
                         <th class="px-4 py-3">Email</th>
                         <th class="px-4 py-3">Department</th>
-                        <th class="px-4 py-3">Designation</th>
+                        <th class="px-4 py-3">Added By</th>
                         <th class="px-4 py-3">Action</th>
                     </tr>
                 </thead>
@@ -29,7 +29,7 @@
                             <td class="px-4 py-3">{{ faculty.name }}</td>
                             <td class="px-4 py-3">{{ faculty.email }}</td>
                             <td class="px-4 py-3">{{ faculty.department }}</td>
-                            <td class="px-4 py-3">{{ faculty.designation }}</td>
+                            <td class="px-4 py-3">{{ faculty.added_by or '-' }}</td>
                             <td class="px-4 py-3">
                                 <form method="POST" action="{{ url_for('remove_faculty', faculty_id=faculty.faculty_id) }}" onsubmit="return confirm('Remove this faculty member?');">
                                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition">
