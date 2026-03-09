@@ -21,6 +21,7 @@ load_dotenv()
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 ADMIN_EMAIL = "admin@vnrvjiet.in"
+SUPER_ADMIN_EMAIL = "24071a0535@vnrvjiet.in"
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
@@ -235,24 +236,25 @@ def google_callback():
         flash("Only VNRVJIET faculty are allowed to login.")
         return redirect(url_for("faculty_login"))
 
+    session["email"] = email
     session['user_email'] = email
-    if email == ADMIN_EMAIL:
+
+    # ADMIN LOGIN
+    if email == SUPER_ADMIN_EMAIL:
         session["role"] = "admin"
         session.pop('faculty_id', None)
-    else:
-        session["role"] = "faculty"
-        faculty = Faculty.query.filter_by(email=email).first()
-        if not faculty:
-            session.pop('role', None)
-            session.pop('user_email', None)
-            flash('Faculty account not registered. Please register first.')
-            return redirect(url_for('faculty_login'))
-        session['faculty_id'] = faculty.faculty_id
-
-    if session["role"] == "admin":
         return redirect(url_for("admin_dashboard"))
-    else:
+
+    # FACULTY LOGIN
+    faculty = Faculty.query.filter_by(email=email).first()
+    if faculty:
+        session["role"] = "faculty"
+        session['faculty_id'] = faculty.faculty_id
         return redirect(url_for("faculty_dashboard"))
+
+    # IF USER NOT REGISTERED
+    flash("You are not registered. Please register first.")
+    return redirect(url_for("faculty_register"))
 
 @app.route('/faculty/register', methods=['GET', 'POST'])
 def faculty_register():
@@ -291,7 +293,7 @@ def faculty_register():
 @app.route('/faculty/dashboard')
 def faculty_dashboard():
     if session.get("role") != "faculty":
-        abort(403)
+        return redirect(url_for("home"))
     if 'faculty_id' not in session:
         return redirect(url_for('faculty_login'))
     faculty = Faculty.query.get(session['faculty_id'])
@@ -464,7 +466,7 @@ def admin_login():
     if request.method == 'POST':
         email = request.form['email'].lower()
         password = request.form['password']
-        if email != ADMIN_EMAIL:
+        if email != SUPER_ADMIN_EMAIL:
             flash('Only the predefined admin email can access admin dashboard.')
             return redirect(url_for('admin_login'))
         admin = Admin.query.filter_by(email=email).first()
@@ -481,7 +483,7 @@ def admin_login():
 @app.route('/admin/dashboard')
 def admin_dashboard():
     if session.get("role") != "admin":
-        abort(403)
+        return redirect(url_for("home"))
     department = request.args.get('department')
     achievement_type = request.args.get('type')
     year = request.args.get('year')

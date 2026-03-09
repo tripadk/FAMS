@@ -24,6 +24,12 @@
             </div>
             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg transition shadow-lg">Login</button>
         </form>
+
+        <div class="mt-4">
+            <a href="{{ url_for('login_google') }}" class="w-full inline-flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 px-5 py-3 rounded-lg transition">
+                <i class="fa-brands fa-google mr-2"></i> Sign in with Google
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
