@@ -181,6 +181,43 @@ def init_db():
             db.session.commit()
             print("Default admin user created.")
 
+def password_login_with_role_priority(email, password):
+    """Authenticate using password with role priority: super_admin -> admin -> faculty."""
+    email = (email or '').strip().lower()
+    session["email"] = email
+    session["user_email"] = email
+
+    # SUPER ADMIN
+    if email == SUPER_ADMIN_EMAIL:
+        super_admin = Admin.query.filter_by(email=email).first()
+        if super_admin and super_admin.password == password:
+            session["role"] = "super_admin"
+            session["user_type"] = "admin"
+            session["admin_id"] = super_admin.admin_id
+            session.pop("faculty_id", None)
+            return redirect(url_for("admin_dashboard"))
+
+    # ADMIN CHECK
+    admin = Admin.query.filter_by(email=email).first()
+    if admin and admin.password == password:
+        session["role"] = "admin"
+        session["user_type"] = "admin"
+        session["admin_id"] = admin.admin_id
+        session.pop("faculty_id", None)
+        return redirect(url_for("admin_dashboard"))
+
+    # FACULTY CHECK
+    faculty = Faculty.query.filter_by(email=email).first()
+    if faculty and faculty.password == password:
+        session["role"] = "faculty"
+        session["user_type"] = "faculty"
+        session["faculty_id"] = faculty.faculty_id
+        session.pop("admin_id", None)
+        return redirect(url_for("faculty_dashboard"))
+
+    flash('Invalid email or password')
+    return None
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -188,7 +225,7 @@ def home():
 @app.route('/faculty/login', methods=['GET', 'POST'])
 def faculty_login():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email'].strip().lower()
         password = request.form['password']
         
         # Check email domain
@@ -196,22 +233,10 @@ def faculty_login():
             flash('Only VNRVJIET faculty email accounts are allowed.')
             return redirect(url_for('faculty_login'))
         
-        # Check if faculty exists
-        faculty = Faculty.query.filter_by(email=email).first()
-        if not faculty:
-            flash('Faculty account not registered. Please register first.')
-            return redirect(url_for('faculty_login'))
-        
-        # Check password
-        if faculty.password != password:
-            flash('Invalid password')
-            return redirect(url_for('faculty_login'))
-        
-        session['faculty_id'] = faculty.faculty_id
-        session['user_type'] = 'faculty'
-        session['role'] = 'faculty'
-        session['user_email'] = email.lower()
-        return redirect(url_for('faculty_dashboard'))
+        login_result = password_login_with_role_priority(email, password)
+        if login_result:
+            return login_result
+        return redirect(url_for('faculty_login'))
     return render_template('login.html')
 
 @app.route('/login/google')
@@ -259,9 +284,9 @@ def google_callback():
         session['faculty_id'] = faculty.faculty_id
         return redirect(url_for("faculty_dashboard"))
 
-    # IF USER NOT REGISTERED
-    flash("You are not registered. Please register first.")
-    return redirect(url_for("faculty_register"))
+    # NOT REGISTERED
+    flash("You are not authorized. Contact admin.")
+    return redirect(url_for("home"))
 
 @app.route('/faculty/register', methods=['GET', 'POST'])
 def faculty_register():
@@ -471,20 +496,12 @@ def download_certificate(achievement_id):
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
-        email = request.form['email'].lower()
+        email = request.form['email'].strip().lower()
         password = request.form['password']
-        admin = Admin.query.filter_by(email=email).first()
-        if not admin:
-            flash('Admin account not found.')
-            return redirect(url_for('admin_login'))
-        if admin and admin.password == password:
-            session['admin_id'] = admin.admin_id
-            session['user_type'] = 'admin'
-            session['role'] = 'super_admin' if email == SUPER_ADMIN_EMAIL else 'admin'
-            session['user_email'] = email
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid email or password')
+        login_result = password_login_with_role_priority(email, password)
+        if login_result:
+            return login_result
+        return redirect(url_for('admin_login'))
     return render_template('admin_login.html')
 
 @app.route('/admin/dashboard')
