@@ -37,11 +37,11 @@
                         <div class="w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white grid place-items-center shadow">
                             <i class="fa-solid fa-user"></i>
                         </div>
-                        {% if session.get('faculty_id') %}
+                        {% if session.get('role') == 'faculty' %}
                             <a href="{{ url_for('faculty_logout') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
                                 <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
                             </a>
-                        {% elif session.get('admin_id') %}
+                        {% elif session.get('role') == 'admin' %}
                             <a href="{{ url_for('admin_logout') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
                                 <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
                             </a>
@@ -55,16 +55,16 @@
             <aside id="sidebar" class="fixed inset-y-0 left-0 top-16 w-72 bg-slate-900 text-slate-100 p-5 transform -translate-x-full lg:translate-x-0 lg:static lg:top-0 lg:w-64 transition-transform duration-300 z-30">
                 <h2 class="text-lg font-semibold mb-5">Navigation</h2>
                 <nav class="space-y-2">
-                    {% if session.get('faculty_id') %}
+                    {% if session.get('role') == 'faculty' %}
                         <a href="{{ url_for('faculty_dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-chart-line mr-2"></i>Dashboard</a>
                         <a href="{{ url_for('add_achievement') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-plus mr-2"></i>Add Achievement</a>
                         <a href="{{ url_for('view_achievements') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-table-list mr-2"></i>View Achievements</a>
                         <a href="{{ url_for('faculty_profile') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-user mr-2"></i>Profile</a>
-                        <a href="{{ url_for('admin_login') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-shield-halved mr-2"></i>Admin Panel</a>
-                    {% elif session.get('admin_id') %}
+                    {% elif session.get('role') == 'admin' %}
                         <a href="{{ url_for('admin_dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-chart-line mr-2"></i>Dashboard</a>
-                        <a href="{{ url_for('pending_achievements') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-hourglass-half mr-2"></i>Pending Approvals</a>
                         <a href="{{ url_for('add_faculty') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-user-plus mr-2"></i>Add Faculty</a>
+                        <a href="{{ url_for('manage_faculty') }}" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-users mr-2"></i>Manage Faculty</a>
+                        <a href="{{ url_for('admin_dashboard') }}#reports" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-chart-pie mr-2"></i>Reports</a>
                     {% endif %}
                 </nav>
             </aside>

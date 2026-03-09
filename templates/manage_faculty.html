@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Faculty{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+    <div class="flex items-center justify-between mb-5">
+        <h2 class="text-2xl font-semibold">Manage Faculty</h2>
+        <a href="{{ url_for('add_faculty') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+            <i class="fa-solid fa-user-plus mr-1"></i>Add Faculty
+        </a>
+    </div>
+
+    {% if faculty_members %}
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="min-w-full text-sm">
+                <thead class="bg-slate-100">
+                    <tr class="text-left text-slate-700">
+                        <th class="px-4 py-3">Name</th>
+                        <th class="px-4 py-3">Email</th>
+                        <th class="px-4 py-3">Department</th>
+                        <th class="px-4 py-3">Designation</th>
+                        <th class="px-4 py-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for faculty in faculty_members %}
+                        <tr class="odd:bg-white even:bg-slate-50">
+                            <td class="px-4 py-3">{{ faculty.name }}</td>
+                            <td class="px-4 py-3">{{ faculty.email }}</td>
+                            <td class="px-4 py-3">{{ faculty.department }}</td>
+                            <td class="px-4 py-3">{{ faculty.designation }}</td>
+                            <td class="px-4 py-3">
+                                <form method="POST" action="{{ url_for('remove_faculty', faculty_id=faculty.faculty_id) }}" onsubmit="return confirm('Remove this faculty member?');">
+                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition">
+                                        Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center text-slate-600">
+            <p class="text-lg font-medium">No faculty records found.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
