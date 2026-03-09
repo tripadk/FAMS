@@ -17,6 +17,18 @@
                 {% for dept in departments %}
                     <option value="{{ dept }}" {% if dept == selected_dept %}selected{% endif %}>{{ dept }}</option>
                 {% endfor %}
+                <option value="csm" {% if selected_dept == 'csm' %}selected{% endif %}>csm</option>
+                <option value="csd" {% if selected_dept == 'csd' %}selected{% endif %}>csd</option>
+                <option value="cso" {% if selected_dept == 'cso' %}selected{% endif %}>cso</option>
+                <option value="csy" {% if selected_dept == 'csy' %}selected{% endif %}>csy</option>
+                <option value="aid" {% if selected_dept == 'aid' %}selected{% endif %}>aid</option>
+                <option value="csb" {% if selected_dept == 'csb' %}selected{% endif %}>csb</option>
+                <option value="rai" {% if selected_dept == 'rai' %}selected{% endif %}>rai</option>
+                <option value="eee" {% if selected_dept == 'eee' %}selected{% endif %}>eee</option>
+                <option value="ece" {% if selected_dept == 'ece' %}selected{% endif %}>ece</option>
+                <option value="me" {% if selected_dept == 'me' %}selected{% endif %}>me</option>
+                <option value="ce" {% if selected_dept == 'ce' %}selected{% endif %}>ce</option>
+                <option value="bt" {% if selected_dept == 'bt' %}selected{% endif %}>bt</option>
             </select>
         </div>
         <div>
@@ -26,6 +38,7 @@
                 {% for t in types %}
                     <option value="{{ t }}" {% if t == selected_type %}selected{% endif %}>{{ t }}</option>
                 {% endfor %}
+                <option value="Others" {% if selected_type == 'Others' %}selected{% endif %}>Others</option>
             </select>
         </div>
         <div>
