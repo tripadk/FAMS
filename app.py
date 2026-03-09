@@ -239,8 +239,15 @@ def google_callback():
     session["email"] = email
     session['user_email'] = email
 
-    # ADMIN LOGIN
+    # SUPER ADMIN CHECK
     if email == SUPER_ADMIN_EMAIL:
+        session["role"] = "super_admin"
+        session.pop('faculty_id', None)
+        return redirect(url_for("admin_dashboard"))
+
+    # ADMIN CHECK
+    admin = Admin.query.filter_by(email=email).first()
+    if admin:
         session["role"] = "admin"
         session.pop('faculty_id', None)
         return redirect(url_for("admin_dashboard"))
@@ -433,7 +440,7 @@ def delete_achievement(achievement_id):
 
 @app.route('/admin/approve_achievement/<int:achievement_id>', methods=['POST'])
 def approve_achievement(achievement_id):
-    if session.get("role") != "admin":
+    if session.get("role") not in ("admin", "super_admin"):
         abort(403)
     achievement = Achievements.query.get_or_404(achievement_id)
     achievement.status = 'approved'
@@ -443,7 +450,7 @@ def approve_achievement(achievement_id):
 
 @app.route('/admin/reject_achievement/<int:achievement_id>', methods=['POST'])
 def reject_achievement(achievement_id):
-    if session.get("role") != "admin":
+    if session.get("role") not in ("admin", "super_admin"):
         abort(403)
     achievement = Achievements.query.get_or_404(achievement_id)
     achievement.status = 'rejected'
@@ -453,7 +460,7 @@ def reject_achievement(achievement_id):
 
 @app.route('/admin/download_certificate/<int:achievement_id>')
 def download_certificate(achievement_id):
-    if session.get("role") != "admin":
+    if session.get("role") not in ("admin", "super_admin"):
         abort(403)
     achievement = Achievements.query.get_or_404(achievement_id)
     if not achievement.certificate_file or not os.path.exists(achievement.certificate_file):
@@ -466,14 +473,14 @@ def admin_login():
     if request.method == 'POST':
         email = request.form['email'].lower()
         password = request.form['password']
-        if email != SUPER_ADMIN_EMAIL:
-            flash('Only the predefined admin email can access admin dashboard.')
-            return redirect(url_for('admin_login'))
         admin = Admin.query.filter_by(email=email).first()
+        if not admin:
+            flash('Admin account not found.')
+            return redirect(url_for('admin_login'))
         if admin and admin.password == password:
             session['admin_id'] = admin.admin_id
             session['user_type'] = 'admin'
-            session['role'] = 'admin'
+            session['role'] = 'super_admin' if email == SUPER_ADMIN_EMAIL else 'admin'
             session['user_email'] = email
             return redirect(url_for('admin_dashboard'))
         else:
@@ -482,7 +489,7 @@ def admin_login():
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
-    if session.get("role") != "admin":
+    if session.get("role") not in ("admin", "super_admin"):
         return redirect(url_for("home"))
     department = request.args.get('department')
     achievement_type = request.args.get('type')
@@ -538,7 +545,7 @@ def admin_dashboard():
 
 @app.route('/admin/pending_achievements')
 def pending_achievements():
-    if session.get("role") != "admin":
+    if session.get("role") not in ("admin", "super_admin"):
         abort(403)
     pending_results = db.session.query(Achievements, Faculty).join(Faculty, Achievements.faculty_id == Faculty.faculty_id).filter(db.func.lower(Achievements.status) == 'pending').all()
     return render_template('pending_achievements.html', pending_results=pending_results)
@@ -564,9 +571,9 @@ def add_faculty():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
-        password = request.form['password']
-        department = request.form['department']
-        designation = request.form['designation']
+        password = request.form.get('password', '')
+        department = request.form.get('department') or 'N/A'
+        designation = request.form.get('designation') or 'N/A'
         existing = Faculty.query.filter_by(email=email).first()
         if existing:
             flash('Email already exists.')
@@ -582,14 +589,14 @@ def add_faculty():
         db.session.add(new_faculty)
         db.session.commit()
         flash('Faculty added successfully.')
-        if session.get("role") == "admin":
+        if session.get("role") in ("admin", "super_admin"):
             return redirect(url_for('admin_dashboard'))
         return redirect(url_for('faculty_dashboard'))
     return render_template('add_faculty.html')
 
 @app.route('/admin/export_achievements')
 def export_achievements():
-    if session.get("role") != "admin":
+    if session.get("role") not in ("admin", "super_admin"):
         abort(403)
     month = request.args.get('month')
     format_type = request.args.get('format', 'csv')
@@ -691,14 +698,14 @@ def export_achievements():
 
 @app.route('/admin/manage_faculty')
 def manage_faculty():
-    if session.get("role") != "admin":
+    if session.get("role") not in ("admin", "super_admin"):
         abort(403)
     faculty_members = Faculty.query.order_by(Faculty.name.asc()).all()
     return render_template('manage_faculty.html', faculty_members=faculty_members)
 
 @app.route('/admin/remove_faculty/<int:faculty_id>', methods=['POST'])
 def remove_faculty(faculty_id):
-    if session.get("role") != "admin":
+    if session.get("role") not in ("admin", "super_admin"):
         abort(403)
     faculty = Faculty.query.get_or_404(faculty_id)
     db.session.delete(faculty)
