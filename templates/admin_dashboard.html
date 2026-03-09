@@ -13,32 +13,32 @@
         <div>
             <label for="department" class="block text-sm font-medium text-slate-700 mb-1">Department</label>
             <select id="department" name="department" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <option value="">All</option>
-                {% for dept in departments %}
-                    <option value="{{ dept }}" {% if dept == selected_dept %}selected{% endif %}>{{ dept }}</option>
-                {% endfor %}
-                <option value="csm" {% if selected_dept == 'csm' %}selected{% endif %}>csm</option>
-                <option value="csd" {% if selected_dept == 'csd' %}selected{% endif %}>csd</option>
-                <option value="cso" {% if selected_dept == 'cso' %}selected{% endif %}>cso</option>
-                <option value="csy" {% if selected_dept == 'csy' %}selected{% endif %}>csy</option>
-                <option value="aid" {% if selected_dept == 'aid' %}selected{% endif %}>aid</option>
-                <option value="csb" {% if selected_dept == 'csb' %}selected{% endif %}>csb</option>
-                <option value="rai" {% if selected_dept == 'rai' %}selected{% endif %}>rai</option>
-                <option value="eee" {% if selected_dept == 'eee' %}selected{% endif %}>eee</option>
-                <option value="ece" {% if selected_dept == 'ece' %}selected{% endif %}>ece</option>
-                <option value="me" {% if selected_dept == 'me' %}selected{% endif %}>me</option>
-                <option value="ce" {% if selected_dept == 'ce' %}selected{% endif %}>ce</option>
-                <option value="bt" {% if selected_dept == 'bt' %}selected{% endif %}>bt</option>
+                <option value="All" {% if not selected_dept or selected_dept == 'All' %}selected{% endif %}>All</option>
+                <option value="CSE" {% if selected_dept == 'CSE' %}selected{% endif %}>CSE</option>
+                <option value="CSM" {% if selected_dept == 'CSM' %}selected{% endif %}>CSM</option>
+                <option value="CSD" {% if selected_dept == 'CSD' %}selected{% endif %}>CSD</option>
+                <option value="CSO" {% if selected_dept == 'CSO' %}selected{% endif %}>CSO</option>
+                <option value="CSY" {% if selected_dept == 'CSY' %}selected{% endif %}>CSY</option>
+                <option value="AID" {% if selected_dept == 'AID' %}selected{% endif %}>AID</option>
+                <option value="CSB" {% if selected_dept == 'CSB' %}selected{% endif %}>CSB</option>
+                <option value="ECE" {% if selected_dept == 'ECE' %}selected{% endif %}>ECE</option>
+                <option value="EEE" {% if selected_dept == 'EEE' %}selected{% endif %}>EEE</option>
+                <option value="ME" {% if selected_dept == 'ME' %}selected{% endif %}>ME</option>
+                <option value="CE" {% if selected_dept == 'CE' %}selected{% endif %}>CE</option>
+                <option value="BT" {% if selected_dept == 'BT' %}selected{% endif %}>BT</option>
+                <option value="RAI" {% if selected_dept == 'RAI' %}selected{% endif %}>RAI</option>
             </select>
         </div>
         <div>
             <label for="type" class="block text-sm font-medium text-slate-700 mb-1">Achievement Type</label>
             <select id="type" name="type" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <option value="">All</option>
-                {% for t in types %}
-                    <option value="{{ t }}" {% if t == selected_type %}selected{% endif %}>{{ t }}</option>
-                {% endfor %}
-                <option value="Others" {% if selected_type == 'Others' %}selected{% endif %}>Others</option>
+                <option value="All" {% if not selected_type or selected_type == 'All' %}selected{% endif %}>All</option>
+                <option value="Publication" {% if selected_type == 'Publication' %}selected{% endif %}>Publication</option>
+                <option value="Conference" {% if selected_type == 'Conference' %}selected{% endif %}>Conference</option>
+                <option value="Workshop" {% if selected_type == 'Workshop' %}selected{% endif %}>Workshop</option>
+                <option value="Patent" {% if selected_type == 'Patent' %}selected{% endif %}>Patent</option>
+                <option value="Award" {% if selected_type == 'Award' %}selected{% endif %}>Award</option>
+                <option value="Other" {% if selected_type == 'Other' %}selected{% endif %}>Other</option>
             </select>
         </div>
         <div>
@@ -191,11 +191,12 @@
     const filterDepartment = document.getElementById('department');
     const filterType = document.getElementById('type');
     const filterYear = document.getElementById('year');
+    const filterForm = document.getElementById('achievementFilterForm');
     const tableRows = document.querySelectorAll('table tbody tr[data-type]');
 
     function applyClientFilters() {
-        const departmentValue = filterDepartment ? filterDepartment.value.trim() : '';
-        const typeValue = filterType ? filterType.value.trim() : '';
+        const departmentValue = filterDepartment && filterDepartment.value.trim() !== 'All' ? filterDepartment.value.trim() : '';
+        const typeValue = filterType && filterType.value.trim() !== 'All' ? filterType.value.trim() : '';
         const yearValue = filterYear ? filterYear.value.trim() : '';
 
         tableRows.forEach((row) => {
@@ -214,6 +215,12 @@
     if (filterDepartment) filterDepartment.addEventListener('change', applyClientFilters);
     if (filterType) filterType.addEventListener('change', applyClientFilters);
     if (filterYear) filterYear.addEventListener('change', applyClientFilters);
+    if (filterForm) {
+        filterForm.addEventListener('submit', () => {
+            if (filterDepartment && filterDepartment.value === 'All') filterDepartment.value = '';
+            if (filterType && filterType.value === 'All') filterType.value = '';
+        });
+    }
 
     const categoryTotals = {{ achievement_totals|tojson }};
     const categoryCtx = document.getElementById('categoryBarChart').getContext('2d');

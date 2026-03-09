@@ -18,20 +18,20 @@
             <div>
                 <label for="department" class="block text-sm font-medium text-slate-700 mb-1">Department</label>
                 <select id="department" name="department" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <option value="">Select Department</option>
+                    <option value="All" {% if faculty.department == 'All' %}selected{% endif %}>All</option>
                     <option value="CSE" {% if faculty.department == 'CSE' %}selected{% endif %}>CSE</option>
                     <option value="CSM" {% if faculty.department == 'CSM' %}selected{% endif %}>CSM</option>
-                    <option value="CSO" {% if faculty.department == 'CSO' %}selected{% endif %}>CSO</option>
                     <option value="CSD" {% if faculty.department == 'CSD' %}selected{% endif %}>CSD</option>
+                    <option value="CSO" {% if faculty.department == 'CSO' %}selected{% endif %}>CSO</option>
+                    <option value="CSY" {% if faculty.department == 'CSY' %}selected{% endif %}>CSY</option>
                     <option value="AID" {% if faculty.department == 'AID' %}selected{% endif %}>AID</option>
                     <option value="CSB" {% if faculty.department == 'CSB' %}selected{% endif %}>CSB</option>
-                    <option value="ME" {% if faculty.department == 'ME' %}selected{% endif %}>ME</option>
                     <option value="ECE" {% if faculty.department == 'ECE' %}selected{% endif %}>ECE</option>
-                    <option value="RAI" {% if faculty.department == 'RAI' %}selected{% endif %}>RAI</option>
                     <option value="EEE" {% if faculty.department == 'EEE' %}selected{% endif %}>EEE</option>
+                    <option value="ME" {% if faculty.department == 'ME' %}selected{% endif %}>ME</option>
                     <option value="CE" {% if faculty.department == 'CE' %}selected{% endif %}>CE</option>
-                    <option value="CSY" {% if faculty.department == 'CSY' %}selected{% endif %}>CSY</option>
-                    <option value="AE" {% if faculty.department == 'AE' %}selected{% endif %}>AE</option>
+                    <option value="BT" {% if faculty.department == 'BT' %}selected{% endif %}>BT</option>
+                    <option value="RAI" {% if faculty.department == 'RAI' %}selected{% endif %}>RAI</option>
                 </select>
             </div>
             <div>
